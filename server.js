@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const idInstance = "7107596936";
-const apiTokenInstance = "6c172bfa0f6f400abc12afbe15142da9b93fc1fd25054f39";
+const apiTokenInstance = "6c172bfa0f6f400abc12afbe15142da9b93fc1fd25054f3994";
 
 const replies = {
   "من انتم": "نحن متجر القراءة 📚 نقدم قصص إلكترونية مخصصة للأطفال بطريقة ممتعة 🤍",
