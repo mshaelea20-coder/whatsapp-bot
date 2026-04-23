@@ -5,37 +5,104 @@ const app = express();
 app.use(express.json());
 
 const idInstance = "7107596936";
-const apiTokenInstance = "6c172bfa0f6f400abc12afbe15142da9b93fc1fd25054f3994";
+const apiTokenInstance = "حطي_هنا_التوكن_الجديد";
 
-const replies = {
-  "من انتم": "نحن متجر القراءة 📚 نقدم قصص إلكترونية مخصصة للأطفال بطريقة ممتعة 🤍",
-  "ايش تقدمون": "نقدم قصصًا تعليمية مخصصة باسم الطفل تساعد على تنمية التفكير ✨",
-  "العمر": "قصصنا مناسبة للأطفال من عمر 7 إلى 12 سنة 👧🧒",
-  "الطلب": "تقدرين تطلبين من هنا 👇\n(حطي رابط الطلب هنا)",
-  "السعر": "التفاصيل موجودة داخل رابط الطلب 🤍"
-};
+function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى/g, "ي")
+    .replace(/[؟?!.,،]/g, "")
+    .trim();
+}
+
+const intents = [
+  {
+    keywords: ["السلام", "سلام", "مرحبا", "اهلا", "هلا", "الو"],
+    reply: `هلا والله 🤍✨
+حياك في متجر القراءة 📚
+
+نقدّم قصص تعليمية مخصصة باسم الطفل تساعد على تنمية التفكير بطريقة ممتعة 🌱
+
+تقدرين تسألين عن:
+- كيف نشتغل
+- الأسعار
+- طريقة الطلب
+
+وأجاوبك بكل حب 🤍`,
+  },
+  {
+    keywords: ["مين انتم", "من انتم", "من انتو", "مين انتو"],
+    reply: `نحن متجر متخصص في القصص التعليمية للأطفال 📚✨
+نصمم قصة باسم الطفل نفسه بحيث يعيش التجربة ويتعلم بطريقة ممتعة 🤍`,
+  },
+  {
+    keywords: ["ايش تقدمون", "وش تقدمون", "ماذا تقدمون", "ايش عندكم", "وش عندكم"],
+    reply: `نقدّم قصص تعليمية مخصصة باسم الطفل 👧🧒
+تكون القصة ممتعة وفيها محتوى يساعد الطفل على التفكير والتعلم بطريقة يحبها ✨`,
+  },
+  {
+    keywords: ["العمر", "الاعمار", "الفئه العمريه", "لمن مناسب", "مين تستهدفون"],
+    reply: `قصصنا مناسبة للأطفال من عمر 7 إلى 12 سنة 👧🧒
+ومصممة بحيث تناسب مستوى فهمهم وتشد انتباههم 🤍`,
+  },
+  {
+    keywords: ["كيف الطريقه", "كيف اطلب", "طريقه الطلب", "الطلب", "كيف يتم الطلب"],
+    reply: `بكل بساطة 🤍✨
+
+1- نأخذ اسم الطفل وبعض التفاصيل
+2- نصمم له قصة مخصصة
+3- نرسل لك القصة جاهزة 📚
+
+تجربة ممتعة للطفل وتخليه يحب القراءة أكثر 🌱`,
+  },
+  {
+    keywords: ["السعر", "الاسعار", "بكم", "كم السعر", "كم سعرها"],
+    reply: `الأسعار والتفاصيل موجودة في رابط الطلب 🤍✨
+(حطي الرابط هنا)`,
+  },
+  {
+    keywords: ["رابط", "رابط الطلب", "ابي الرابط", "ابغى الرابط", "ارسلي الرابط", "ارسل الرابط"],
+    reply: `تقدرين تطلبين من هنا بكل سهولة 👇✨
+(حطي الرابط هنا)
+
+وإذا احتجتي مساعدة أنا معك 🤍`,
+  },
+];
+
+function getReply(message) {
+  const text = normalizeText(message);
+
+  for (const intent of intents) {
+    for (const keyword of intent.keywords) {
+      if (text.includes(normalizeText(keyword))) {
+        return intent.reply;
+      }
+    }
+  }
+
+  return `حياك 🤍✨
+ممكن توضحي سؤالك أكثر؟ أو اختاري من هذي الخيارات:
+
+- كيف الطريقة
+- الأسعار
+- الطلب
+
+وأساعدك فورًا 🌱`;
+}
 
 app.post("/webhook", async (req, res) => {
   try {
     const body = req.body;
-
-    const message =
-      body?.messageData?.textMessageData?.textMessage || "";
-
+    const message = body?.messageData?.textMessageData?.textMessage || "";
     const chatId = body?.senderData?.chatId;
 
     if (!message || !chatId) {
       return res.sendStatus(200);
     }
 
-    let reply = "حياك 🤍 ممكن توضحين سؤالك أكثر؟";
-
-    for (let key in replies) {
-      if (message.toLowerCase().includes(key)) {
-        reply = replies[key];
-        break;
-      }
-    }
+    const reply = getReply(message);
 
     console.log("وارد:", message);
     console.log("رد:", reply);
@@ -43,8 +110,8 @@ app.post("/webhook", async (req, res) => {
     await axios.post(
       `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`,
       {
-        chatId: chatId,
-        message: reply
+        chatId,
+        message: reply,
       }
     );
 
