@@ -1,34 +1,58 @@
 const express = require("express");
+const axios = require("axios");
 const app = express();
 
 app.use(express.json());
 
+const idInstance = "7107596936";
+const apiTokenInstance = "6c172bfa0f6f400abc12afbe15142da9b93fc1fd25054f39";
+
 const replies = {
   "من انتم": "نحن متجر القراءة 📚 نقدم قصص إلكترونية مخصصة للأطفال بطريقة ممتعة 🤍",
-  "ايش تقدمون": "نقدم قصص تعليمية مخصصة باسم الطفل تساعد على تنمية التفكير ✨",
-  "العمر": "قصصنا مناسبة للأطفال من عمر 7 إلى 12 سنة 👧🧑",
-  "الطلب": "تقدرين تطلبين من هنا 👇\n(حطي رابط الاستبيان هنا)",
-  "السعر": "حالياً التفاصيل متوفرة داخل النموذج 🤍",
+  "ايش تقدمون": "نقدم قصصًا تعليمية مخصصة باسم الطفل تساعد على تنمية التفكير ✨",
+  "العمر": "قصصنا مناسبة للأطفال من عمر 7 إلى 12 سنة 👧🧒",
+  "الطلب": "تقدرين تطلبين من هنا 👇\n(حطي رابط الطلب هنا)",
+  "السعر": "التفاصيل موجودة داخل رابط الطلب 🤍"
 };
 
-app.post("/webhook", (req, res) => {
-  const message = req.body.message?.text?.toLowerCase() || "";
+app.post("/webhook", async (req, res) => {
+  try {
+    const body = req.body;
 
-  let reply = "حياك 🤍 ممكن توضحي سؤالك أكثر؟";
+    const message =
+      body?.messageData?.textMessageData?.textMessage || "";
 
-  for (let key in replies) {
-    if (message.includes(key)) {
-      reply = replies[key];
-      break;
+    const chatId = body?.senderData?.chatId;
+
+    if (!message || !chatId) {
+      return res.sendStatus(200);
     }
+
+    let reply = "حياك 🤍 ممكن توضحين سؤالك أكثر؟";
+
+    for (let key in replies) {
+      if (message.toLowerCase().includes(key)) {
+        reply = replies[key];
+        break;
+      }
+    }
+
+    console.log("وارد:", message);
+    console.log("رد:", reply);
+
+    await axios.post(
+      `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`,
+      {
+        chatId: chatId,
+        message: reply
+      }
+    );
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("خطأ:", error.response?.data || error.message);
+    res.sendStatus(500);
   }
-
-  console.log("Incoming:", message);
-  console.log("Reply:", reply);
-
-  res.json({
-    reply: reply,
-  });
 });
 
 app.get("/", (req, res) => {
