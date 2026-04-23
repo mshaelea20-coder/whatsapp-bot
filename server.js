@@ -11,7 +11,7 @@ const replies = {
   "السعر": "حالياً التفاصيل متوفرة داخل النموذج 🤍",
 };
 
-app.post("/", (req, res) => {
+app.post("/webhook", (req, res) => {
   const message = req.body.message?.text?.toLowerCase() || "";
 
   let reply = "حياك 🤍 ممكن توضحي سؤالك أكثر؟";
