@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const idInstance = "7107596936";
-const apiTokenInstance = "حطي_هنا_التوكن_الجديد";
+const apiTokenInstance = "c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a";
 
 function normalizeText(text) {
   return text
