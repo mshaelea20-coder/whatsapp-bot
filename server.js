@@ -69,7 +69,6 @@ const intents = [
   {
     keywords: ["رابط", "رابط الطلب", "ابي الرابط", "ابغى الرابط", "ارسلي الرابط", "ارسل الرابط", "النموذج", "استبيان"],
     reply: `تقدرين تطلبين من هنا بكل سهولة 👇✨
-    
 (https://forms.gle/Szz3aExew6x2sXfq6)
 
 وإذا احتجتي مساعدة أنا معك 🤍`,
@@ -126,7 +125,18 @@ app.post("/webhook", async (req, res) => {
     res.sendStatus(500);
   }
 });
+app.post("/generate-story", async (req, res) => {
+  try {
+    const { childName, phone, lesson } = req.body;
 
+    console.log("طلب قصة جديد:", childName, phone, lesson);
+
+    res.send("story request received");
+  } catch (error) {
+    console.error("خطأ في توليد القصة:", error.message);
+    res.sendStatus(500);
+  }
+});
 app.get("/", (req, res) => {
   res.send("Bot is running");
 });
