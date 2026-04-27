@@ -1,142 +1,95 @@
 const express = require("express");
 const axios = require("axios");
-const app = express();
 
+const app = express();
 app.use(express.json());
 
 const idInstance = "7107596936";
-const apiTokenInstance = "c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a";
+const apiTokenInstance = c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a"";
 
 function normalizeText(text) {
-  return text
-    .toLowerCase()
-    .replace(/[أإآ]/g, "ا")
-    .replace(/ة/g, "ه")
-    .replace(/ى/g, "ي")
-    .replace(/[؟?!.,،]/g, "")
-    .trim();
+  return (text || "").toLowerCase().trim();
 }
 
-const intents = [
-  {
-   const intents = [
-  {
-    keywords: ["السلام", "سلام", "مرحبا", "اهلا", "هلا", "الو", "هاي"],
-    reply: `هلا والله 🤍✨
-حياك في متجر القراءة 📚
+async function askClaude(message) {
+  const response = await axios.post(
+    "https://api.anthropic.com/v1/messages",
+    {
+      model: "claude-haiku-4-5",
+      max_tokens: 250,
+      messages: [
+        {
+          role: "user",
+          content: `
+أنتِ موظفة خدمة عملاء لمتجر قصص أطفال إلكترونية.
 
-نقدّم قصص تعليمية مخصصة باسم الطفل تساعد على تنمية التفكير بطريقة ممتعة 🌱
+ردّي باللهجة السعودية، بأسلوب ودود ومختصر وواضح.
 
-تقدرين تسألين عن:
-- كيف نشتغل
-- الأسعار
-- طريقة الطلب
+معلومات المتجر:
+- نقدم قصص إلكترونية مخصصة باسم الطفل.
+- القصة تساعد على تنمية التفكير بطريقة ممتعة.
+- العميل يشتري ثم يعبئ نموذج بيانات الطفل.
+- إذا سأل عن طريقة الطلب: اشرحي له أن يشتري ثم يعبئ النموذج.
+- إذا قال إن الكتاب ما وصله: اطلبي منه رقم الجوال أو رقم الطلب.
+- إذا سأل عن الأسعار: قولي له إن التفاصيل موجودة في رابط الطلب.
+- إذا كان السؤال غير واضح: اطلبي منه يوضح سؤاله بلطف.
 
-وأجاوبك بكل حب 🤍`,
-  },
-  {
-    keywords: ["مين انتم", "من انتم", "من انتو", "مين انتو", "تعريف", "ايش متجركم"],
-    reply: `نحن متجر متخصص في القصص التعليمية للأطفال 📚✨
-نصمم قصة باسم الطفل نفسه بحيث يعيش التجربة ويتعلم بطريقة ممتعة 🤍`,
-  },
-  {
-    keywords: ["ايش تقدمون", "وش تقدمون", "ماذا تقدمون", "ايش عندكم", "وش عندكم", "خدماتكم", "منتجاتكم"],
-    reply: `نقدّم قصص تعليمية مخصصة باسم الطفل 👧🧒
-تكون القصة ممتعة وفيها محتوى يساعد الطفل على التفكير والتعلم بطريقة يحبها ✨`,
-  },
-  {
-    keywords: ["العمر", "الاعمار", "الفئه العمريه", "لمن مناسب", "مين تستهدفون", "كم عمر", "يناسب اي عمر"],
-    reply: `قصصنا مناسبة للأطفال من عمر 7 إلى 12 سنة 👧🧒
-ومصممة بحيث تناسب مستوى فهمهم وتشد انتباههم 🤍`,
-  },
-  {
-    keywords: ["كيف الطريقه", "كيف الطريقة", "كيف اطلب", "كيف اشتري", "ابي اشتري", "ابغى اشتري", "شراء", "اشتري", "طريقه الطلب", "طريقة الطلب", "الطلب", "اطلب", "كيف يتم الطلب"],
-    reply: `بكل بساطة 🤍✨
-
-1- تعبين نموذج الطلب
-2- تكتبين اسم الطفل وبعض التفاصيل
-3- نجهز لك القصة
-4- نرسلها لك إلكترونيًا 📚
-
-تقدرين تبدئين من هنا 👇
-()`,
-  },
-  {
-    keywords: ["السعر", "الاسعار", "الأسعار", "بكم", "كم السعر", "كم سعرها", "التكلفه", "التكلفة"],
-    reply: `الأسعار والتفاصيل موجودة في رابط الطلب 🤍✨
-( )`,
-  },
-  {
-    keywords: ["رابط", "رابط الطلب", "ابي الرابط", "ابغى الرابط", "ارسلي الرابط", "ارسل الرابط", "النموذج", "استبيان"],
-    reply: `تقدرين تطلبين من هنا بكل سهولة 👇✨
-(https://forms.gle/Szz3aExew6x2sXfq6)
-
-وإذا احتجتي مساعدة أنا معك 🤍`,
-  },
-];
-
-function getReply(message) {
-  const text = normalizeText(message);
-
-  for (const intent of intents) {
-    for (const keyword of intent.keywords) {
-      if (text.includes(normalizeText(keyword))) {
-        return intent.reply;
+رسالة العميل:
+${message}
+`
+        }
+      ]
+    },
+    {
+      headers: {
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
       }
     }
-  }
+  );
 
-  return `حياك 🤍✨
-ممكن توضحي سؤالك أكثر؟ أو اختاري من هذي الخيارات:
+  return response.data.content[0].text;
+}
 
-- كيف الطريقة
-- الأسعار
-- الطلب
-
-وأساعدك فورًا 🌱`;
+async function sendWhatsApp(chatId, message) {
+  await axios.post(
+    `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`,
+    {
+      chatId: chatId,
+      message: message
+    }
+  );
 }
 
 app.post("/webhook", async (req, res) => {
   try {
     const body = req.body;
-    const message = body?.messageData?.textMessageData?.textMessage || "";
+
+    const message =
+      body?.messageData?.textMessageData?.textMessage || "";
+
     const chatId = body?.senderData?.chatId;
 
     if (!message || !chatId) {
       return res.sendStatus(200);
     }
 
-    const reply = getReply(message);
+    console.log("Incoming:", message);
 
-    console.log("وارد:", message);
-    console.log("رد:", reply);
+    const reply = await askClaude(normalizeText(message));
 
-    await axios.post(
-      `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`,
-      {
-        chatId,
-        message: reply,
-      }
-    );
+    console.log("Reply:", reply);
+
+    await sendWhatsApp(chatId, reply);
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("خطأ:", error.response?.data || error.message);
+    console.error("Error:", error.response?.data || error.message);
     res.sendStatus(500);
   }
 });
-app.post("/generate-story", async (req, res) => {
-  try {
-    const { childName, phone, lesson } = req.body;
 
-    console.log("طلب قصة جديد:", childName, phone, lesson);
-
-    res.send("story request received");
-  } catch (error) {
-    console.error("خطأ في توليد القصة:", error.message);
-    res.sendStatus(500);
-  }
-});
 app.get("/", (req, res) => {
   res.send("Bot is running");
 });
