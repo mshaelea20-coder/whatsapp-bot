@@ -4,96 +4,256 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
+// بيانات Green API
+const idInstance = "const express = require("express");
+const axios = require("axios");
+
+const app = express();
+app.use(express.json());
+
+// بيانات Green API
+const idInstance = "const express = require("express");
+const axios = require("axios");
+
+const app = express();
+app.use(express.json());
+
+// بيانات Green API
 const idInstance = "7107596936";
-const apiTokenInstance = c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a"";
+const apiTokenInstance = "c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a";
 
-function normalizeText(text) {
-  return (text || "").toLowerCase().trim();
-}
+// مفتاح Claude (من Render)
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
+// استدعاء Claude
 async function askClaude(message) {
+  const prompt = `
+أنت مساعد متجر كتب أطفال.
+
+افهم رسالة العميل ورد حسب التالي:
+
+- إذا مجرد سلام → رد بشكل لطيف
+- إذا يسأل عن الطلب → طمّنه واسأله عن التفاصيل
+- إذا يطلب كتاب → أرسل له هذا النموذج:
+
+✨ عشان نصمم لك قصة خاصة:
+https://forms.gle/Sez3aExew6x2sXfq6
+
+خلك مختصر وودود
+`;
+
   const response = await axios.post(
     "https://api.anthropic.com/v1/messages",
     {
-      model: "claude-haiku-4-5",
-      max_tokens: 250,
+      model: "claude-3-haiku-20240307",
+      max_tokens: 300,
       messages: [
         {
           role: "user",
-          content: `
-أنتِ موظفة خدمة عملاء لمتجر قصص أطفال إلكترونية.
-
-ردّي باللهجة السعودية، بأسلوب ودود ومختصر وواضح.
-
-معلومات المتجر:
-- نقدم قصص إلكترونية مخصصة باسم الطفل.
-- القصة تساعد على تنمية التفكير بطريقة ممتعة.
-- العميل يشتري ثم يعبئ نموذج بيانات الطفل.
-- إذا سأل عن طريقة الطلب: اشرحي له أن يشتري ثم يعبئ النموذج.
-- إذا قال إن الكتاب ما وصله: اطلبي منه رقم الجوال أو رقم الطلب.
-- إذا سأل عن الأسعار: قولي له إن التفاصيل موجودة في رابط الطلب.
-- إذا كان السؤال غير واضح: اطلبي منه يوضح سؤاله بلطف.
-
-رسالة العميل:
-${message}
-`
-        }
-      ]
+          content: prompt + "\n\nرسالة العميل: " + message,
+        },
+      ],
     },
     {
       headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "x-api-key": CLAUDE_API_KEY,
         "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
-      }
+        "content-type": "application/json",
+      },
     }
   );
 
   return response.data.content[0].text;
 }
 
-async function sendWhatsApp(chatId, message) {
-  await axios.post(
-    `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`,
-    {
-      chatId: chatId,
-      message: message
-    }
-  );
+// إرسال واتساب
+async function sendWhatsApp(phone, message) {
+  const url = `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
+
+  await axios.post(url, {
+    chatId: phone,
+    message: message,
+  });
 }
 
+// استقبال الرسائل من واتساب
 app.post("/webhook", async (req, res) => {
   try {
-    const body = req.body;
+    const message = req.body.messageData?.textMessageData?.textMessage;
+    const sender = req.body.senderData?.chatId;
 
-    const message =
-      body?.messageData?.textMessageData?.textMessage || "";
+    if (!message) return res.sendStatus(200);
 
-    const chatId = body?.senderData?.chatId;
+    const reply = await askClaude(message);
 
-    if (!message || !chatId) {
-      return res.sendStatus(200);
-    }
-
-    console.log("Incoming:", message);
-
-    const reply = await askClaude(normalizeText(message));
-
-    console.log("Reply:", reply);
-
-    await sendWhatsApp(chatId, reply);
+    await sendWhatsApp(sender, reply);
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
+    console.log(error);
     res.sendStatus(500);
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Bot is running");
+// تشغيل السيرفر
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});";
+const apiTokenInstance = "حطي_التوكن_هنا";
+
+// مفتاح Claude (من Render)
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+
+// استدعاء Claude
+async function askClaude(message) {
+  const prompt = `
+أنت مساعد متجر كتب أطفال.
+
+افهم رسالة العميل ورد حسب التالي:
+
+- إذا مجرد سلام → رد بشكل لطيف
+- إذا يسأل عن الطلب → طمّنه واسأله عن التفاصيل
+- إذا يطلب كتاب → أرسل له هذا النموذج:
+
+✨ عشان نصمم لك قصة خاصة:
+https://forms.gle/Sez3aExew6x2sXfq6
+
+خلك مختصر وودود
+`;
+
+  const response = await axios.post(
+    "https://api.anthropic.com/v1/messages",
+    {
+      model: "claude-3-haiku-20240307",
+      max_tokens: 300,
+      messages: [
+        {
+          role: "user",
+          content: prompt + "\n\nرسالة العميل: " + message,
+        },
+      ],
+    },
+    {
+      headers: {
+        "x-api-key": CLAUDE_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+    }
+  );
+
+  return response.data.content[0].text;
+}
+
+// إرسال واتساب
+async function sendWhatsApp(phone, message) {
+  const url = `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
+
+  await axios.post(url, {
+    chatId: phone,
+    message: message,
+  });
+}
+
+// استقبال الرسائل من واتساب
+app.post("/webhook", async (req, res) => {
+  try {
+    const message = req.body.messageData?.textMessageData?.textMessage;
+    const sender = req.body.senderData?.chatId;
+
+    if (!message) return res.sendStatus(200);
+
+    const reply = await askClaude(message);
+
+    await sendWhatsApp(sender, reply);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
+// تشغيل السيرفر
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});";
+const apiTokenInstance = "حطي_التوكن_هنا";
+
+// مفتاح Claude (من Render)
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+
+// استدعاء Claude
+async function askClaude(message) {
+  const prompt = `
+أنت مساعد متجر كتب أطفال.
+
+افهم رسالة العميل ورد حسب التالي:
+
+- إذا مجرد سلام → رد بشكل لطيف
+- إذا يسأل عن الطلب → طمّنه واسأله عن التفاصيل
+- إذا يطلب كتاب → أرسل له هذا النموذج:
+
+✨ عشان نصمم لك قصة خاصة:
+https://forms.gle/Sez3aExew6x2sXfq6
+
+خلك مختصر وودود
+`;
+
+  const response = await axios.post(
+    "https://api.anthropic.com/v1/messages",
+    {
+      model: "claude-3-haiku-20240307",
+      max_tokens: 300,
+      messages: [
+        {
+          role: "user",
+          content: prompt + "\n\nرسالة العميل: " + message,
+        },
+      ],
+    },
+    {
+      headers: {
+        "x-api-key": CLAUDE_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+    }
+  );
+
+  return response.data.content[0].text;
+}
+
+// إرسال واتساب
+async function sendWhatsApp(phone, message) {
+  const url = `https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
+
+  await axios.post(url, {
+    chatId: phone,
+    message: message,
+  });
+}
+
+// استقبال الرسائل من واتساب
+app.post("/webhook", async (req, res) => {
+  try {
+    const message = req.body.messageData?.textMessageData?.textMessage;
+    const sender = req.body.senderData?.chatId;
+
+    if (!message) return res.sendStatus(200);
+
+    const reply = await askClaude(message);
+
+    await sendWhatsApp(sender, reply);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+// تشغيل السيرفر
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
