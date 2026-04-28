@@ -1,4 +1,4 @@
-"}
+55321"}
 ```javascript
 const express = require("express");
 const axios = require("axios");
@@ -6,11 +6,9 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-// بيانات Green API من Environment
 const idInstance = process.env.GREEN_ID_INSTANCE;
 const apiTokenInstance = process.env.GREEN_API_TOKEN;
 
-// دالة إرسال واتساب
 async function sendWhatsApp(phone, message) {
   await axios.post(
     https://7107.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance},
@@ -21,7 +19,6 @@ async function sendWhatsApp(phone, message) {
   );
 }
 
-// دالة كلود
 async function askClaude(userMessage) {
   const response = await axios.post(
     "https://api.anthropic.com/v1/messages",
@@ -47,7 +44,6 @@ async function askClaude(userMessage) {
   return response.data.content[0].text;
 }
 
-// استقبال الرسائل
 app.post("/webhook", async (req, res) => {
   try {
     const message =
@@ -67,8 +63,5 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
-// تشغيل السيرفر
 app.listen(3000, () => {
   console.log("Server running on port 3000");
-});
-`
