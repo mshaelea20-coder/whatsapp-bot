@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const app = express();
 app.use(express.json());
-
+console.log("NEW CODE IS RUNNING 12345");
 const idInstance = process.env.GREEN_ID_INSTANCE;
 const apiTokenInstance = process.env.GREEN_API_TOKEN;
 
