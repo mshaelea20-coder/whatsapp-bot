@@ -46,7 +46,9 @@ app.post("/webhook", async (req, res) => {
   try {
     const message =
       req.body.messageData?.textMessageData?.textMessage;
-    const sender = req.body.senderData?.chatId;
+    const sender = req.body.senderData.chatId.includes("@c.us")
+  ? req.body.senderData.chatId
+  : req.body.senderData.chatId + "@c.us";
 
     if (!message) return res.sendStatus(200);
 
