@@ -44,21 +44,30 @@ async function askClaude(userMessage) {
 
 app.post("/webhook", async (req, res) => {
   try {
-    const message =
-      req.body.messageData?.textMessageData?.textMessage;
-    const sender = req.body.senderData.chatId.includes("@c.us")
-  ? req.body.senderData.chatId
-  : req.body.senderData.chatId + "@c.us";
+    console.log("WEBHOOK HIT");
+    console.log(JSON.stringify(req.body));
 
-    if (!message) return res.sendStatus(200);
+    const message =
+      req.body?.messageData?.textMessageData?.textMessage ||
+      req.body?.messageData?.extendedTextMessageData?.text ||
+      req.body?.messageData?.quotedMessage?.textMessage;
+
+    const sender = req.body?.senderData?.chatId;
+
+    console.log("MESSAGE:", message);
+    console.log("SENDER:", sender);
+
+    if (!message || !sender) return res.sendStatus(200);
 
     const reply = await askClaude(message);
+    console.log("CLAUDE REPLY:", reply);
 
     await sendWhatsApp(sender, reply);
+    console.log("SENT TO WHATSAPP");
 
     res.sendStatus(200);
   } catch (error) {
-    console.log(error);
+    console.log("ERROR:", error.response?.data || error.message);
     res.sendStatus(500);
   }
 });
