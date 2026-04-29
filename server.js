@@ -9,7 +9,7 @@ const apiTokenInstance = process.env.GREEN_API_TOKEN;
 
 async function sendWhatsApp(phone, message) {
   await axios.post(
-    "https://api.green-api.com/waInstance" + idInstance + "/sendMessage/" + apiTokenInstance,
+   "https://7107.api.greenapi.com/waInstance7107596936/sendMessage/c6f1356321d246218d48cb7a0dc3bf3c20d34c5b75a34fe18a",
     {
       chatId: phone,
       message: message,
