@@ -9,7 +9,7 @@ const apiTokenInstance = process.env.GREEN_API_TOKEN;
 
 async function sendWhatsApp(phone, message) {
   await axios.post(
-   "https://7107.api.greenapi.com/waInstance" + idInstance + "/sendMessage/" + apiTokenInstance,
+   "https://7107.api.greenapi.com/waInstance7107604821/sendMessage/60178bae6e444849a7375b19efd2a9318d7a08de62e947c193",
     {
       chatId: phone,
       message: message,
@@ -62,7 +62,9 @@ app.post("/webhook", async (req, res) => {
     const reply = await askClaude(message);
     console.log("CLAUDE REPLY:", reply);
 
-    const phone = sender.includes("@") ? sender : sender + "@c.us";
+    const phone = sender.includes("@")
+  ? sender
+  : sender.replace("c.us", "") + "@c.us";
 await sendWhatsApp(phone, reply);
     console.log("SENT TO WHATSAPP");
 
