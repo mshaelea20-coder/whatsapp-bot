@@ -62,7 +62,8 @@ app.post("/webhook", async (req, res) => {
     const reply = await askClaude(message);
     console.log("CLAUDE REPLY:", reply);
 
-    await sendWhatsApp(sender, reply);
+    const phone = sender.includes("@") ? sender : sender + "@c.us";
+await sendWhatsApp(phone, reply);
     console.log("SENT TO WHATSAPP");
 
     res.sendStatus(200);
