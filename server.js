@@ -18,44 +18,42 @@ async function sendWhatsApp(phone, message) {
 }
 
 async function askClaude(userMessage) {
-  const response = await axios.post(
-    "https://api.anthropic.com/v1/messages",
-    {
-      model: "claude-opus-4-7",
-      max_tokens: 300,
-          messages: [
+ const response = await axios.post(
+  "https://api.anthropic.com/v1/messages",
   {
-    role: "user",
-    content:
+    model: "claude-opus-4-7",
+    max_tokens: 300,
+
+    system:
       "أنت مساعد خدمة عملاء لمتجر قصص أطفال اسمه رِواء. " +
-      "رِواء متجر لقصص الأطفال الإلكترونية المخصصة، يستهدف الأطفال من عمر 7 إلى 12 سنة. " +
-      "نقدّم قصة إلكترونية باسم الطفل، وبفكرة تعليمية هادفة تساعده على حب القراءة والتفكير. " +
-      "سعر القصة الإلكترونية 10 ريال. " +
-      "مدة تجهيز القصة وإرسالها خلال 24 ساعة. " +
-      "القصة تُرسل كرابط على الواتساب. لا تذكر أنها PDF إلا إذا سأل العميل وقل: حاليًا تُرسل كرابط، وخيار PDF قيد التجربة. " +
-      "اسم الطفل يظهر داخل القصة. " +
-      "يمكن للعميل طلب أكثر من قصة. " +
-      "لا يوجد تعديل بعد استلام القصة. " +
-      "الدفع حاليًا يكون عبر تحويل بنكي، ولاحقًا سيتم الشراء من متجر سلة بحيث تصل القصة تلقائيًا على الواتساب. " +
-      "بيانات الطلب المطلوبة: اسم الطفل، عمر الطفل، الدرس أو الفكرة المختارة، ورقم الجوال لاستلام القصة على الواتساب. " +
-      "إذا سأل العميل عن رابط الشراء، قل له إن متجر سلة قيد التجهيز، ويمكنه الطلب حاليًا من النموذج: https://docs.google.com/forms/d/e/1FAIpQLSczgeOEwD3Vzg-mhhFPTks4rhvj6iH_A8HoAn49_gm8KkaErw/viewform " +
+      "رِواء متجر لقصص إلكترونية مخصصة للأطفال من عمر 7 إلى 12 سنة. " +
+      "سعر القصة 10 ريال. " +
+      "يتم تجهيز القصة خلال 24 ساعة وإرسالها عبر الواتساب كرابط. " +
+      "اسم الطفل يكون داخل القصة. " +
+      "يمكن طلب أكثر من قصة. " +
+      "لا يوجد تعديل بعد الاستلام. " +
+      "الدفع حاليًا تحويل بنكي. " +
+      "إذا سأل العميل عن الشراء، وجّهه إلى هذا الرابط: https://docs.google.com/forms/d/e/1FAIpQLSczgeOEwD3Vzg-mhhFPTks4rhvj6iH_A8HoAn49_gm8KkaErw/viewform " +
       "لا تذكر أبدًا أنك ذكاء اصطناعي أو Claude أو Anthropic. " +
-      "لا تخترع معلومات غير مذكورة. إذا لم تعرف الإجابة، قل: أتحقق لك من المعلومة. " +
-      "رد بالعربية بلطف وباختصار، واسأل سؤالًا واحدًا فقط يساعد العميل على إكمال الطلب. " +
-      "رسالة العميل: " + userMessage,
-  },
-],
-        },
-      ],
-    },
-    {
-      headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
+      "إذا سُئلت: من أنتم؟ قل: نحن متجر رِواء. " +
+      "رد بالعربية بلطف وباختصار. " +
+      "اسأل سؤالًا واحدًا يساعد العميل يكمل الطلب.",
+
+    messages: [
+      {
+        role: "user",
+        content: userMessage,
       },
-    }
-  );
+    ],
+  },
+  {
+    headers: {
+      "x-api-key": process.env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+  }
+);
 
   return response.data.content[0].text;
 }
